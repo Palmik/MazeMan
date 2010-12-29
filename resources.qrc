@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/themes/default/sprite.svg</file>
+    </qresource>
+</RCC>
