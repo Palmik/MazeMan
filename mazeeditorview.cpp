@@ -25,39 +25,41 @@
 MazeEditorView::MazeEditorView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* parent) :
     MazeView(theme_, parent), model_m(modelData_)
 {
-    reloadModel(model().data());
+    reload(model().data());
 }
 
-void MazeEditorView::clear(MazeModelData* modelData_)
+void MazeEditorView::reload(MazeModelData* modelData_)
 {
     model_m = MazeEditorModel(modelData_);
 
-    reloadModel(model().data());
+    MazeView::reload(model().data());
 }
 
 void MazeEditorView::clickReceived(int x)
 {
     QPoint clickedPos(model().data()->translate(x));
 
+    qDebug() << "Clicked";
+
     if ((model().data()->playerPosition() == clickedPos)) {
-        model_m.setObstacleAt(clickedPos, false);
-        model_m.setPlayerPosition(model().firstFreeNonOccupiedTile());
+        qDebug() << "1";
         model_m.setEnemyPosition(clickedPos);
     }
     else if ((model().data()->enemyPosition() == clickedPos)) {
-        model_m.setObstacleAt(clickedPos, false);
-        model_m.setEnemyPosition(model().firstFreeNonOccupiedTile());
+        qDebug() << "2";
         model_m.setPortalPosition(clickedPos);
     }
     else if ((model().data()->portalPosition() == clickedPos)) {
+        qDebug() << "3";
         model_m.setObstacleAt(clickedPos, false);
-        model_m.setPortalPosition(model().firstFreeNonOccupiedTile());
+        model_m.setPortalPosition(model_m.previousPortalPosition());
     }
-    else if (!model().data()->isObstacleAt(clickedPos)) {
+    else if (!(model().data()->isObstacleAt(clickedPos))) {
+        qDebug() << "4";
         model_m.setObstacleAt(clickedPos, true);
     }
-    else if (model().data()->isObstacleAt(clickedPos)) {
-        model_m.setObstacleAt(clickedPos, false);
+    else {
+        qDebug() << "5";
         model_m.setPlayerPosition(clickedPos);
     }
 
@@ -66,5 +68,5 @@ void MazeEditorView::clickReceived(int x)
     updatePortalPosition();
     updateTileGraphicsAt(clickedPos);
 
-    MazeView::clickReceived(x);
+    //MazeView::clickReceived(x);
 }

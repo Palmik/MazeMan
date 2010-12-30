@@ -31,8 +31,11 @@ namespace Ui {
 class StartupDialog : public QDialog {
     Q_OBJECT
 public:
-    StartupDialog(QWidget *parent = 0);
+    StartupDialog(bool showQuit = true, QWidget *parent = 0);
     ~StartupDialog();
+
+    void showQuit();
+    void hideQuit();
 
 signals:
     void openCampaign();

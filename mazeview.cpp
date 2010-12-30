@@ -38,12 +38,14 @@ MazeView::MazeView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* p
     QGraphicsSvgItem(parent), player_m(0), enemy_m(0), portal_m(0), theme_m(theme_), modelData_m(modelData_), clickMapper_m(new QSignalMapper())
 {
     setFlags(flags() ^ QGraphicsItem::ItemIsFocusable);
-    reloadModel(modelData());
+    reload(modelData());
 }
 
 void MazeView::clickReceived(int x)
 {
+    Q_UNUSED(x);
     setFocus();
+    qDebug() << "Clicked (MazeView)";
 }
 
 void MazeView::updatePlayerPosition()
@@ -82,11 +84,12 @@ void MazeView::updateTileGraphicsAt(QPoint p)
     tiles_m.at(modelData()->translate(p))->setElementId((modelData()->isObstacleAt(p)) ? "tile_wall" : "tile_free");
 }
 
-void MazeView::reloadModel(MazeModelData* modelData_)
+void MazeView::reload(MazeModelData* modelData_)
 {
     modelData_m = modelData_;
     qDeleteAll(tiles_m);
     tiles_m.clear();
+    clickMapper_m->disconnect();
 
     delete player_m;
     delete enemy_m;
@@ -127,7 +130,7 @@ void MazeView::reloadModel(MazeModelData* modelData_)
     setFocus();
 }
 
-void MazeView::reloadModel()
+void MazeView::reload()
 {
-    reloadModel(modelData());
+    reload(modelData());
 }

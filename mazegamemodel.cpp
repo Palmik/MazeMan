@@ -20,7 +20,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "mazegamemodel.h"
-#include <QDebug>
 
 MazeGameModel::MazeGameModel(MazeModelData* data) :
     enemyOnMove_m(false), data_m(data)
@@ -62,11 +61,9 @@ bool MazeGameModel::movePlayer(Move move)
     bool success = isPlayerOnMove() && isValidPlayerMove(move);
 
     if (success) {
-        qDebug() << "Old player pos: " << data()->playerPosition().x() << data()->playerPosition().y();
         QPoint newPos = movePoint(data()->playerPosition(), move);
         enemyOnMove_m = !enemyOnMove_m;
         data()->setPlayerPosition(newPos);
-        qDebug() << "New player pos: " << data()->playerPosition().x() << data()->playerPosition().y();
     }
 
     return success;

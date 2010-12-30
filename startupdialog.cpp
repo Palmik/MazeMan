@@ -22,7 +22,7 @@
 #include "startupdialog.h"
 #include "ui_startupdialog.h"
 
-StartupDialog::StartupDialog(QWidget *parent) :
+StartupDialog::StartupDialog(bool showQuit, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StartupDialog)
 {
@@ -37,11 +37,25 @@ StartupDialog::StartupDialog(QWidget *parent) :
     connect(ui->openCampaign, SIGNAL(clicked()), this, SIGNAL(openCampaign()));
     connect(ui->createMap, SIGNAL(clicked()), this, SIGNAL(createMap()));
     connect(ui->quit, SIGNAL(clicked()), this, SIGNAL(quit()));
+
+    if (!showQuit) {
+        hideQuit();
+    }
 }
 
 StartupDialog::~StartupDialog()
 {
     delete ui;
+}
+
+void StartupDialog::showQuit()
+{
+    ui->quit->show();
+}
+
+void StartupDialog::hideQuit()
+{
+    ui->quit->hide();
 }
 
 void StartupDialog::changeEvent(QEvent *e)

@@ -33,10 +33,10 @@ public:
 
     MazeEditorModel const& model() const { return model_m; }
 
-    void clear(MazeModelData* modelData_);
+    virtual void reload(MazeModelData* modelData_);
 
-protected slots:
-    virtual void clickReceived(int x);
+protected:
+    void clickReceived(int x);
 
 private:
     //MazeEditorModel& model() { return model_m; }

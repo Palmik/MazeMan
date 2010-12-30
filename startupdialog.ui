@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>126</width>
-    <height>174</height>
+    <width>131</width>
+    <height>112</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,6 +36,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="quit">
+     <property name="text">
+      <string>Quit</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -47,13 +54,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="quit">
-     <property name="text">
-      <string>Quit</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

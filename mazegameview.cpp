@@ -38,19 +38,19 @@ void MazeGameView::keyPressEvent(QKeyEvent* event)
     MazeGameModel::Move move;
     switch (event->key()) {
     case Qt::Key_Up :
-        qDebug() << "U";
+        //qDebug() << "U";
         move = MazeGameModel::Up;
         break;
     case Qt::Key_Down :
-        qDebug() << "D";
+        //qDebug() << "D";
         move = MazeGameModel::Down;
         break;
     case Qt::Key_Left :
-        qDebug() << "L";
+        //qDebug() << "L";
         move = MazeGameModel::Left;
         break;
     case Qt::Key_Right :
-        qDebug() << "R";
+        //qDebug() << "R";
         move = MazeGameModel::Right;
         break;
     default:
@@ -58,11 +58,10 @@ void MazeGameView::keyPressEvent(QKeyEvent* event)
         break;
     }
 
-    model().data()->save(std::cerr);
-    qDebug() << model().data()->width();
-    qDebug() << model().data()->height();
-    qDebug() << model().data()->playerPosition().x() << model().data()->playerPosition().y();
-    qDebug() << model().data()->isObstacleAt(QPoint(model().data()->playerPosition().x() + 1, model().data()->playerPosition().y()));
+    //qDebug() << model().data()->width();
+    //qDebug() << model().data()->height();
+    //qDebug() << model().data()->playerPosition().x() << model().data()->playerPosition().y();
+    //qDebug() << model().data()->isObstacleAt(QPoint(model().data()->playerPosition().x() + 1, model().data()->playerPosition().y()));
 
     handlePlayerMove(move);
 }
@@ -77,19 +76,19 @@ void MazeGameView::clickReceived(int x)
     MazeGameModel::Move move;
 
     if (diffX == -1 && diffY == 0) {
-        qDebug() << "R";
+        //qDebug() << "R";
         move = MazeGameModel::Right;
     }
     else if (diffX == 1 && diffY == 0) {
-        qDebug() << "L";
+        //qDebug() << "L";
         move = MazeGameModel::Left;
     }
     else if (diffX == 0 && diffY == -1) {
-        qDebug() << "D";
+        //qDebug() << "D";
         move = MazeGameModel::Down;
     }
     else if (diffX == 0 && diffY == 1) {
-        qDebug() << "U";
+        //qDebug() << "U";
         move = MazeGameModel::Up;
     }
     else {
@@ -104,20 +103,20 @@ void MazeGameView::clickReceived(int x)
 void MazeGameView::handlePlayerMove(MazeGameModel::Move move)
 {
     if (model().movePlayer(move)) {
-        qDebug() << "wut?";
+        //qDebug() << "wut?";
         updatePlayerPosition();
         model().moveEnemy(solveEnemyMove());
         updateEnemyPosition();
     }
 
     if (model().isGameOver()) {
-        qDebug() << "Game Over";
+        //qDebug() << "Game Over";
         if (model().hasPlayerWon()) {
-            qDebug() << "Player Won";
+            //qDebug() << "Player Won";
             emit playerWon();
         }
         else {
-            qDebug() << "Player Lost";
+            //qDebug() << "Player Lost";
             emit playerLost();
         }
     }

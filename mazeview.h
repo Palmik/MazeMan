@@ -40,8 +40,8 @@ public:
     virtual ~MazeView() {}
 
 public slots:
-    void reloadModel(MazeModelData* modelData);
-    void reloadModel();
+    virtual void reload(MazeModelData* modelData);
+    void reload();
 
 protected slots:
     virtual void clickReceived(int x);

@@ -35,8 +35,11 @@ class MazeModelData
 public:
     MazeModelData(std::istream& in);
     MazeModelData(uint width, uint height, QString const& mapName, bool obstacles = false);
+    MazeModelData();
 
-    void load(std::istream& in);
+    void reload(std::istream& in);
+    void reload(uint width, uint height, QString const& mapName, bool obstacles = false);
+
     void save(std::ostream& out) const;
 
     bool isEmpty() const { return ((width() * height()) == 0); }
@@ -55,7 +58,7 @@ public:
     bool isInBounds(QPoint p) const { return !(((uint)p.x() >= width_m) || ((uint)p.y() >= height_m) || (p.x() < 0) || (p.y() < 0)); }
 
     virtual void setObstacleAt(QPoint p, bool obstacle) { assert(isInBounds(p) && "Attempt to set obstacle out of bounds"); matrix_m[(translate(p))] = obstacle; }
-    void setPlayerPosition(QPoint p) { qDebug() << "Set player pos to: " << p.x() << p.y(); assert(isInBounds(p) && "Attempt to set player pos. out of bounds"); playerPosition_m = p; qDebug() << "Player pos was set to: " << playerPosition_m.x() << playerPosition_m.y();}
+    void setPlayerPosition(QPoint p) { assert(isInBounds(p) && "Attempt to set player pos. out of bounds"); playerPosition_m = p; }
     void setEnemyPosition(QPoint p) { assert(isInBounds(p) && "Attempt to set enemy pos. out of bounds"); enemyPosition_m = p; }
     void setPortalPosition(QPoint p) { assert(isInBounds(p) && "Attempt to set portal pos. out of bounds"); portalPosition_m = p; }
     void setMapName(QString const& name) { mapName_m = name; }

@@ -22,24 +22,26 @@
 #include "mazemodeldata.h"
 
 MazeModelData::MazeModelData(std::istream &in) :
-    matrix_m(0, false), width_m(0), height_m(0), playerPosition_m(0, 0), enemyPosition_m(0, 0), portalPosition_m(0, 0), mapName_m("Some Name")
+    matrix_m(0, false), width_m(0), height_m(0), playerPosition_m(0, 0), enemyPosition_m(0, 0), portalPosition_m(0, 0), mapName_m("Empty")
 {
-    load(in);
+    reload(in);
 }
 
-MazeModelData::MazeModelData(uint width, uint height, const QString& mapName, bool obstacles) :
+MazeModelData::MazeModelData(uint width, uint height, QString const& mapName, bool obstacles) :
     matrix_m(width * height, obstacles), width_m(width), height_m(height), playerPosition_m(0, 0), enemyPosition_m(0, 0), portalPosition_m(0, 0), mapName_m(mapName)
 {
+    save(std::cerr);
 }
 
-void MazeModelData::load(std::istream& in)
+MazeModelData::MazeModelData() :
+    matrix_m(0, false), width_m(0), height_m(0), playerPosition_m(0, 0), enemyPosition_m(0, 0), portalPosition_m(0, 0), mapName_m("Empty")
 {
-    matrix_m.clear();
-    playerPosition_m = QPoint(0, 0);
-    enemyPosition_m = QPoint(0, 0);
-    portalPosition_m = QPoint(0, 0);
-    width_m = 0;
-    height_m = 0;
+
+}
+
+void MazeModelData::reload(std::istream& in)
+{
+    reload(0, 0, "Empty");
 
     std::string buffer;
     std::getline(in, buffer);
@@ -47,8 +49,9 @@ void MazeModelData::load(std::istream& in)
 
     while (std::getline(in, buffer) && in.good()) {
         std::size_t length = buffer.length();
-        width_m = length;
         if ((length > 0) && (buffer.at(0) == '#')) {
+            width_m = length;
+            qDebug() << "Width: " << width_m;
             for (size_t i = 0; i < length; ++i) {
                 matrix_m.push_back((buffer.at(i) == '#'));
                 switch (buffer.at(i)) {
@@ -70,33 +73,48 @@ void MazeModelData::load(std::istream& in)
             ++height_m;
         }
     }
+
+    save(std::cerr);
+}
+
+void MazeModelData::reload(uint width, uint height, QString const& mapName, bool obstacles)
+{
+    matrix_m.resize(width * height);
+    matrix_m.fill(obstacles, width * height);
+    width_m = width;
+    height_m = height;
+    playerPosition_m = QPoint(0, 0);
+    enemyPosition_m = QPoint(0, 0);
+    portalPosition_m = QPoint(0, 0);
+    mapName_m = mapName;
 }
 
 void MazeModelData::save(std::ostream& out) const
 {
     out << mapName().toStdString();
 
-    std::size_t size = matrix_m.size();
-    for (std::size_t i = 0; i < size; ++i) {
-        if ((i % width()) == 0) {
-            out << std::endl;
-        }
+    out << std::endl;
+    for (uint y = 0; y < height(); ++y) {
+        for (uint x = 0; x < width(); ++x) {
+            QPoint point(x, y);
 
-        if (translate(enemyPosition()) == i) {
-            out << 'E';
+            if (playerPosition() == point) {
+                out << 'P';
+            }
+            else if (enemyPosition() == point) {
+                out << 'E';
+            }
+            else if (portalPosition() == point) {
+                out << '@';
+            }
+            else if (isObstacleAt(point)) {
+                out << '#';
+            }
+            else {
+                out << ' ';
+            }
         }
-        else if (translate(playerPosition()) == i) {
-            out << 'P';
-        }
-        else if (translate(portalPosition()) == i) {
-            out << '@';
-        }
-        else if (isObstacleAt(translate(i))) {
-            out << '#';
-        }
-        else {
-            out << ' ';
-        }
+        out << std::endl;
     }
 
     out << std::endl;
