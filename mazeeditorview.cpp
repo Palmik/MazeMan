@@ -68,5 +68,5 @@ void MazeEditorView::clickReceived(int x)
     updatePortalPosition();
     updateTileGraphicsAt(clickedPos);
 
-    //MazeView::clickReceived(x);
+    MazeView::clickReceived(x);
 }
