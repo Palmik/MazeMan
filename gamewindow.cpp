@@ -68,6 +68,8 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     programView()->setBackgroundElementId("background");
     programView()->setCacheMode(QGraphicsView::CacheBackground);
 
+    show();
+
     mainMenu()->hideQuit();
     mainMenu()->exec();
     mainMenu()->showQuit();

@@ -30,6 +30,6 @@ int main(int argc, char *argv[])
     SvgTheme* myTheme = new SvgTheme(QString(":/resources/themes/default/sprite.svg"));
     GameWindow window(myTheme);
     QObject::connect(&window, SIGNAL(quit()), &app, SLOT(quit()));
-    window.show();
+    //window.show();
     return app.exec();
 }
