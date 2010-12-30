@@ -27,9 +27,10 @@
 #include <QFileDialog>
 #include <fstream>
 #include "core/svgresizingview.h"
+#include "core/svgtheme.h"
 #include "mazeeditorview.h"
 #include "mazegameview.h"
-#include "core/svgtheme.h"
+#include "createmapdialog.h"
 
 GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     QMainWindow(parent),
@@ -49,10 +50,6 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     QGraphicsScene* scene = new QGraphicsScene(this);
     programView()->setScene(scene);
 
-    ui->actionSave->setVisible(false);
-    //ui->actionStartTestGame->setVisible(false);
-    //ui->actionStopTestGame->setVisible(false);
-
     connect(mainMenu(), SIGNAL(openMap()), this, SLOT(openNewMap()));
     connect(mainMenu(), SIGNAL(openCampaign()), this, SLOT(openNewCampaign()));
     connect(mainMenu(), SIGNAL(quit()), this, SIGNAL(quit()));
@@ -63,28 +60,30 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     connect(ui->actionStartCampaign, SIGNAL(triggered()), this, SLOT(openNewCampaign()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveCurrentMap()));
     connect(ui->actionCreateMap, SIGNAL(triggered()), this, SLOT(createMap()));
+    connect(ui->actionStartTestGame, SIGNAL(triggered()), this, SLOT(startTestGame()));
+    connect(ui->actionStopTestGame, SIGNAL(triggered()), this, SLOT(stopTestGame()));
 
     programView()->setAspectRatioMode(Qt::KeepAspectRatio);
     programView()->setBackgroundRenderer(theme()->renderer());
     programView()->setBackgroundElementId("background");
     programView()->setCacheMode(QGraphicsView::CacheBackground);
-    //gameView()->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
-    this->show();
+    mainMenu()->hideQuit();
     mainMenu()->exec();
+    mainMenu()->showQuit();
 }
 
 GameWindow::~GameWindow()
 {
     delete ui;
-    delete gameView_m;
+    delete modelData_m;
 }
 
 void GameWindow::openNewMap()
 {
     QString mapFileName = QFileDialog::getOpenFileName(this, tr("Open Map File"), "./", tr("Maps (*.map)"));
     if (!mapFileName.isEmpty()) {
-        forfeitCampaign();
+        stopCampaign();
         startMap(mapFileName);
     }
 }
@@ -99,33 +98,21 @@ void GameWindow::openNewCampaign()
 
 void GameWindow::startCampaign(const QString& campaignDirectory)
 {
-    forfeitCampaign();
+    stopCampaign();
+    campaignInProgress_m = true;
     currentCampaign_m = new Campaign(campaignDirectory);
     startMap(currentCampaign_m->nextMap());
 }
 
 void GameWindow::createMap()
 {
-    ui->actionSave->setVisible(true);
-
-    delete modelData_m;
-    modelData_m = new MazeModelData(30, 30, "Some Name");
-
-    editorMode_m = true;
-
-    if (gameView()) {
-        gameView()->hide();
+    CreateMapDialog dialog;
+    if (dialog.exec()) {
+        editorMode_m = true;
+        modelData()->reload(dialog.enteredWidth(), dialog.enteredHeight(), dialog.enteredName(), false);
+        editorView()->reload(modelData());
+        switchToEditorView();
     }
-
-    if (!editorView()) {
-        editorView_m = new MazeEditorView(modelData(), theme());
-        programView()->scene()->addItem(editorView());
-    }
-    else {
-        editorView()->clear(modelData());
-    }
-
-    editorView()->show();
 }
 
 void GameWindow::startMap(const QString& mapPath)
@@ -133,34 +120,13 @@ void GameWindow::startMap(const QString& mapPath)
     std::ifstream mapFile(mapPath.toStdString().c_str());
     if (mapFile.is_open() && mapFile.good()) {
         editorMode_m = false;
-
-        if (editorView()) {
-            editorView()->hide();
-        }
-
-        if (!modelData()) {
-            modelData_m = new MazeModelData(mapFile);
-        }
-        else {
-            modelData()->load(mapFile);
-        }
-
-        if (!gameView()) {
-            gameView_m = new MazeGameView(modelData(), theme());
-
-            connect(gameView(), SIGNAL(playerWon()), this, SLOT(handlePlayerWon()));
-            connect(gameView(), SIGNAL(playerLost()), this, SLOT(handlePlayerLost()));
-            programView()->scene()->addItem(gameView());
-        }
-        else {
-            gameView()->reloadModel(modelData());
-        }
-        ui->actionSave->setVisible(true);
-        gameView()->show();
+        modelData()->reload(mapFile);
+        gameView()->reload(modelData());
+        switchToGameView();
     }    
 }
 
-void GameWindow::forfeitCampaign()
+void GameWindow::stopCampaign()
 {
     campaignInProgress_m = false;
     delete currentCampaign_m;
@@ -169,30 +135,123 @@ void GameWindow::forfeitCampaign()
 
 void GameWindow::handlePlayerWon()
 {
-    if (campaignInProgress_m) {
-        QString nextMapPath = currentCampaign_m->nextMap();
-        if (nextMapPath.isEmpty()) {
-            handlePlayerWonCampaign();
+    if (!editorMode_m) {
+        if (campaignInProgress()) {
+            QString nextMapPath = currentCampaign_m->nextMap();
+            if (nextMapPath.isEmpty()) {
+                handlePlayerWonCampaign();
+            }
+            else {
+                startMap(nextMapPath);
+            }
         }
         else {
-            startMap(nextMapPath);
+            mainMenu()->exec();
         }
     }
     else {
-        mainMenu()->exec();
+        stopTestGame();
     }
-    ui->actionSave->setVisible(false);
 }
 
 void GameWindow::handlePlayerLost()
 {
-    if (campaignInProgress_m) {
-        handlePlayerLostCampaign();
+    if (!editorMode_m) {
+        if (campaignInProgress()) {
+            handlePlayerLostCampaign();
+        }
+        else {
+            mainMenu()->exec();
+        }
     }
     else {
-        mainMenu()->exec();
+        stopTestGame();
     }
-    ui->actionSave->setVisible(false);
+}
+
+void GameWindow::saveCurrentMap()
+{
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save Current Map"), "./", tr("Maps (*.map)"));
+    std::ofstream file(saveFileName.toStdString().c_str());
+
+    if (file.is_open() && file.good()) {
+        modelData()->save(file);
+    }
+
+    file.close();
+}
+
+void GameWindow::startTestGame()
+{
+    if (editorMode_m) {
+        qDebug() << "Starting test game";
+        gameView()->reload(modelData());
+        switchToGameView();
+    }
+}
+
+void GameWindow::stopTestGame()
+{
+    if (editorMode_m) {
+        qDebug() << "Stoping test game";
+        editorView()->reload(modelData());
+        switchToEditorView();
+    }
+}
+
+void GameWindow::switchToEditorView()
+{
+    if (gameView_m) {
+        gameView()->hide();
+    }
+    editorView()->show();
+    editorView()->setFocus();
+    programView()->scene()->setSceneRect(programView()->scene()->itemsBoundingRect());
+    programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
+}
+
+void GameWindow::switchToGameView()
+{
+    if (editorView_m) {
+        editorView()->hide();
+    }
+    gameView()->show();
+    gameView()->setFocus();
+    programView()->scene()->setSceneRect(programView()->scene()->itemsBoundingRect());
+    programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
+}
+
+MazeModelData* GameWindow::modelData()
+{
+    if (!modelData_m) {
+        modelData_m = new MazeModelData();
+    }
+
+    return modelData_m;
+}
+
+MazeEditorView* GameWindow::editorView()
+{
+    if (!editorView_m) {
+        editorView_m = new MazeEditorView(modelData(), theme());
+        editorView_m->setParent(this);
+        programView()->scene()->addItem(editorView());
+    }
+
+    return editorView_m;
+}
+
+MazeGameView* GameWindow::gameView()
+{
+    if (!gameView_m) {
+        gameView_m = new MazeGameView(modelData(), theme());
+        gameView_m->setParent(this);
+        connect(gameView(), SIGNAL(playerWon()), this, SLOT(handlePlayerWon()));
+        connect(gameView(), SIGNAL(playerLost()), this, SLOT(handlePlayerLost()));
+        programView()->scene()->addItem(gameView());
+    }
+
+    return gameView_m;
 }
 
 void GameWindow::handlePlayerLostCampaign()
@@ -208,42 +267,6 @@ void GameWindow::handlePlayerWonCampaign()
 SvgResizingView* GameWindow::programView()
 {
     return ui->gameView;
-}
-
-void GameWindow::saveCurrentMap()
-{
-    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save Current Map"), "./", tr("Maps (*.map)"));
-    std::ofstream saveFile(saveFileName.toStdString().c_str());
-
-    if (saveFile.is_open() && saveFile.good()) {
-        if (editorMode_m) {
-            editorView()->model().data()->save(saveFile);
-        }
-        else {
-            modelData()->save(saveFile);
-        }
-    }
-
-    saveFile.close();
-}
-void GameWindow::on_actionStartTestGame_triggered()
-{
-    if (editorMode_m && !testGameInProgress_m) {
-        editorView()->hide();
-        if (!gameView()) {
-            gameView_m = new MazeGameView(editorView()->model().data(), theme());
-
-            connect(gameView(), SIGNAL(playerWon()), this, SLOT(handlePlayerWon()));
-            connect(gameView(), SIGNAL(playerLost()), this, SLOT(handlePlayerLost()));
-            programView()->scene()->addItem(gameView());
-        }
-        else {
-            gameView()->reloadModel(editorView()->model().data());
-        }
-        ui->actionSave->setVisible(true);
-        gameView()->show();
-        gameView()->setFocus();
-    }
 }
 
 void GameWindow::on_actionFullscreen_triggered()

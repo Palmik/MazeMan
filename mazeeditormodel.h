@@ -44,10 +44,16 @@ public:
     void toggleObstacleAt(QPoint p);
     QPoint firstFreeNonOccupiedTile() const;
 
+    QPoint previousPortalPosition() { return previousPortalPosition_m; }
+
 private:
     void placeObstaclesAtBorders();
     bool isBorderAt(QPoint p) const;
     uint freeTilesCount() const;
+
+    QPoint previousPlayerPosition_m;
+    QPoint previousEnemyPosition_m;
+    QPoint previousPortalPosition_m;
 
     MazeModelData* data_m;
 };

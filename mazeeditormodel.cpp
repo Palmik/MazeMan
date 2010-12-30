@@ -33,7 +33,12 @@ MazeEditorModel::MazeEditorModel(MazeModelData* data_) :
     data_m->setPlayerPosition(firstFreeNonOccupiedTile());
     data_m->setEnemyPosition(firstFreeNonOccupiedTile());
     data_m->setPortalPosition(firstFreeNonOccupiedTile());
-    assert((freeTilesCount() > 4) && "Not enought free tiles");
+
+    previousPlayerPosition_m = data()->playerPosition();
+    previousEnemyPosition_m = data()->enemyPosition();
+    previousPortalPosition_m = data()->portalPosition();
+
+    assert((freeTilesCount() > 3) && "Not enought free tiles");
 }
 
 void MazeEditorModel::toggleObstacleAt(QPoint p)
@@ -57,27 +62,72 @@ QPoint MazeEditorModel::firstFreeNonOccupiedTile() const
 
 void MazeEditorModel::setPlayerPosition(QPoint point)
 {
-    data_m->setPlayerPosition(point);
+    if (!isBorderAt(point) && (data()->playerPosition() != point)) {
+        data_m->setObstacleAt(point, false);
+
+        previousPlayerPosition_m = data()->playerPosition();
+        if (point == data()->enemyPosition()) {
+            setEnemyPosition(previousEnemyPosition_m);
+        }
+        else if (point == data()->portalPosition()) {
+            setPortalPosition(previousPortalPosition_m);
+        }
+        data_m->setPlayerPosition(point);
+    }
 }
 
 void MazeEditorModel::setEnemyPosition(QPoint point)
 {
-    data_m->setEnemyPosition(point);
+    if (!isBorderAt(point) && (data()->enemyPosition() != point)) {
+        data_m->setObstacleAt(point, false);
+
+        previousEnemyPosition_m = data()->enemyPosition();
+        if (point == data()->playerPosition()) {
+            setPlayerPosition(previousPlayerPosition_m);
+        }
+        else if (point == data()->portalPosition()) {
+            setPortalPosition(previousPortalPosition_m);
+        }
+        data_m->setEnemyPosition(point);
+    }
 }
 
 void MazeEditorModel::setPortalPosition(QPoint point)
 {
-    data_m->setPortalPosition(point);
+    if (!isBorderAt(point) && (data()->portalPosition() != point)) {
+        data_m->setObstacleAt(point, false);
+
+        previousPortalPosition_m = data()->portalPosition();
+        if (point == data()->playerPosition()) {
+            setPlayerPosition(previousPlayerPosition_m);
+        }
+        else if (point == data()->enemyPosition()) {
+            setEnemyPosition(previousEnemyPosition_m);
+        }
+        data_m->setPortalPosition(point);
+    }
 }
 
-void MazeEditorModel::setObstacleAt(QPoint p, bool obstacle)
+void MazeEditorModel::setObstacleAt(QPoint point, bool obstacle)
 {
     // You can not change border tiles
-    if (isBorderAt(p) || (freeTilesCount() <= 4)) {
+    if (isBorderAt(point) || ((freeTilesCount() <= 4) && obstacle)) {
         return;
     }
 
-    data_m->setObstacleAt(p, obstacle);
+    if (obstacle) {
+        if (point == data()->playerPosition()) {
+            setPlayerPosition(previousPlayerPosition_m);
+        }
+        else if (point == data()->enemyPosition()) {
+            setEnemyPosition(previousEnemyPosition_m);
+        }
+        else if (point == data()->portalPosition()) {
+            setPortalPosition(previousPortalPosition_m);
+        }
+    }
+
+    data_m->setObstacleAt(point, obstacle);
 }
 
 uint MazeEditorModel::freeTilesCount() const

@@ -56,7 +56,7 @@ private slots:
     void startCampaign(const QString& campaignDirectory);
     void startMap(const QString& mapPath);
     void createMap();
-    void forfeitCampaign();
+    void stopCampaign();
     void openNewMap();
     void openNewCampaign();
     void handlePlayerLost();
@@ -65,15 +65,19 @@ private slots:
     void handlePlayerLostCampaign();
     void saveCurrentMap();
     void on_actionFullscreen_triggered();
-    void on_actionStartTestGame_triggered();
+    void startTestGame();
+    void stopTestGame();
     //void on_actionStopTestGame_triggered();
 
 private:
+    void switchToGameView();
+    void switchToEditorView();
+    bool campaignInProgress() { return campaignInProgress_m; }
     SvgResizingView* programView();
     SvgTheme* theme() const { return theme_m; }
-    MazeGameView* gameView() const { return gameView_m; }
-    MazeEditorView* editorView() const { return editorView_m; }
-    MazeModelData* modelData() const { return modelData_m; }
+    MazeGameView* gameView();
+    MazeEditorView* editorView();
+    MazeModelData* modelData();
     StartupDialog* mainMenu() const { return mainMenu_m; }
 
     Campaign* currentCampaign_m;
