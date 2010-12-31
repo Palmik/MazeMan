@@ -55,13 +55,13 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     connect(mainMenu(), SIGNAL(openCampaignRequested()), this, SLOT(openNewCampaign()));
     connect(mainMenu(), SIGNAL(quitRequested()), this, SIGNAL(quitRequested()));
     connect(mainMenu(), SIGNAL(quitRequested()), this, SLOT(close()));
-    connect(mainMenu(), SIGNAL(createMapRequested()), this, SLOT(createMap()));
+    connect(mainMenu(), SIGNAL(createMapRequested()), this, SLOT(startMapEditor()));
 
     connect(ui->actionQuit, SIGNAL(triggered()), this, SIGNAL(quitRequested()));
     connect(ui->actionStartMap, SIGNAL(triggered()), this, SLOT(openNewMap()));
     connect(ui->actionStartCampaign, SIGNAL(triggered()), this, SLOT(openNewCampaign()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveCurrentMap()));
-    connect(ui->actionCreateMap, SIGNAL(triggered()), this, SLOT(createMap()));
+    connect(ui->actionCreateMap, SIGNAL(triggered()), this, SLOT(startMapEditor()));
     connect(ui->actionStartTestGame, SIGNAL(triggered()), this, SLOT(startTestGame()));
     connect(ui->actionStopTestGame, SIGNAL(triggered()), this, SLOT(stopTestGame()));
 
@@ -108,21 +108,25 @@ void GameWindow::startCampaign(const QString& campaignDirectory)
     startMap(currentCampaign_m->nextMap());
 }
 
-void GameWindow::createMap()
+void GameWindow::startMapEditor()
 {
     MapEditorDialog dialog;
     if (dialog.exec()) {
 
+        //qDebug() << "Start Map Editor";
+
         switch (dialog.chosenOption()) {
         case MapEditorDialog::CreateNewMap : {
+                //qDebug() << "Chosen Create";
                 CreateMapDialog createDialog;
-                if (dialog.exec()) {
+                if (createDialog.exec()) {
                     editorMode_m = true;
                     modelData()->reload(createDialog.enteredWidth(), createDialog.enteredHeight(), createDialog.enteredName(), false);
                 }
             }
             break;
         case MapEditorDialog::EditExistingMap : {
+                //qDebug() << "Chosen Edit";
                 QString mapFileName = QFileDialog::getOpenFileName(this, tr("Open Map File"), "./", tr("Maps (*.map)"));
                 if (!mapFileName.isEmpty()) {
                     std::ifstream mapFile(mapFileName.toStdString().c_str());
@@ -211,7 +215,7 @@ void GameWindow::saveCurrentMap()
 void GameWindow::startTestGame()
 {
     if (editorMode_m) {
-        qDebug() << "Starting test game";
+        //qDebug() << "Starting test game";
         gameView()->reload(modelData());
         switchToGameView();
     }
@@ -220,7 +224,7 @@ void GameWindow::startTestGame()
 void GameWindow::stopTestGame()
 {
     if (editorMode_m) {
-        qDebug() << "Stoping test game";
+        //qDebug() << "Stoping test game";
         editorView()->reload(modelData());
         switchToEditorView();
     }
@@ -233,7 +237,6 @@ void GameWindow::switchToEditorView()
     }
     editorView()->show();
     editorView()->setFocus();
-    programView()->scene()->setSceneRect(programView()->scene()->itemsBoundingRect());
     programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
 }
 
@@ -244,7 +247,6 @@ void GameWindow::switchToGameView()
     }
     gameView()->show();
     gameView()->setFocus();
-    programView()->scene()->setSceneRect(programView()->scene()->itemsBoundingRect());
     programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
 }
 

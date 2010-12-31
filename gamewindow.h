@@ -57,7 +57,7 @@ private:
 private slots:
     void startCampaign(const QString& campaignDirectory);
     void startMap(const QString& mapPath);
-    void createMap();
+    void startMapEditor();
     void stopCampaign();
     void openNewMap();
     void openNewCampaign();
