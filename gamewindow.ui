@@ -41,7 +41,6 @@
     </property>
     <addaction name="actionStartMap"/>
     <addaction name="actionStartCampaign"/>
-    <addaction name="actionCreateMap"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="separator"/>
@@ -51,6 +50,8 @@
     <property name="title">
      <string>Editor</string>
     </property>
+    <addaction name="actionCreateMap"/>
+    <addaction name="actionEditMap"/>
     <addaction name="actionStartTestGame"/>
     <addaction name="actionStopTestGame"/>
    </widget>
@@ -82,24 +83,34 @@
     <string>Start Campaign</string>
    </property>
   </action>
-  <action name="actionCreateMap">
-   <property name="text">
-    <string>Create Map</string>
-   </property>
-  </action>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
    </property>
   </action>
+  <action name="actionStartMapEditor">
+   <property name="text">
+    <string>Start Map Editor</string>
+   </property>
+  </action>
+  <action name="actionCreateMap">
+   <property name="text">
+    <string>Create Map</string>
+   </property>
+  </action>
+  <action name="actionEditMap">
+   <property name="text">
+    <string>Edit Map</string>
+   </property>
+  </action>
   <action name="actionStartTestGame">
    <property name="text">
-    <string>Start Test Play</string>
+    <string>Start Test Game</string>
    </property>
   </action>
   <action name="actionStopTestGame">
    <property name="text">
-    <string>Stop Test Play</string>
+    <string>Stop Test Game</string>
    </property>
   </action>
  </widget>

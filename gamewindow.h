@@ -58,6 +58,8 @@ private slots:
     void startCampaign(const QString& campaignDirectory);
     void startMap(const QString& mapPath);
     void startMapEditor();
+    bool createNewMap();
+    bool editExistingMap();
     void stopCampaign();
     void openNewMap();
     void openNewCampaign();
@@ -72,6 +74,9 @@ private slots:
     //void on_actionStopTestGame_triggered();
 
 private:
+    bool isInEditorMode() { return editorMode_m; }
+    void enterEditorMode();
+    void enterGameMode();
     void switchToGameView();
     void switchToEditorView();
     bool campaignInProgress() { return campaignInProgress_m; }

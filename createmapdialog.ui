@@ -19,6 +19,9 @@
      <property name="text">
       <string>Map Name:</string>
      </property>
+     <property name="buddy">
+      <cstring>mapName</cstring>
+     </property>
     </widget>
    </item>
    <item>
@@ -35,12 +38,18 @@
        <property name="text">
         <string>Width:</string>
        </property>
+       <property name="buddy">
+        <cstring>widthSpinBox</cstring>
+       </property>
       </widget>
      </item>
      <item row="0" column="1">
       <widget class="QLabel" name="heightLabel">
        <property name="text">
         <string>Height:</string>
+       </property>
+       <property name="buddy">
+        <cstring>heightSpinBox</cstring>
        </property>
       </widget>
      </item>
@@ -87,8 +96,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>197</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -103,8 +112,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>197</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
