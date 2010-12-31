@@ -275,6 +275,7 @@ void GameWindow::switchToEditorView()
     if (gameView_m) {
         gameView()->hide();
     }
+    editorView()->reload(modelData());
     editorView()->show();
     editorView()->setFocus();
     programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
@@ -285,6 +286,7 @@ void GameWindow::switchToGameView()
     if (editorView_m) {
         editorView()->hide();
     }
+    gameView()->reload(modelData());
     gameView()->show();
     gameView()->setFocus();
     programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
