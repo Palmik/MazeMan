@@ -38,10 +38,10 @@ public:
     void hideQuit();
 
 signals:
-    void openCampaign();
-    void openMap();
-    void createMap();
-    void quit();
+    void openCampaignRequested();
+    void openMapRequested();
+    void createMapRequested();
+    void quitRequested();
 
 protected:
     void changeEvent(QEvent *e);

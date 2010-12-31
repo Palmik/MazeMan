@@ -34,7 +34,9 @@ ClickableSvgItem::ClickableSvgItem(const QString& fileName, QGraphicsItem* paren
 
 void ClickableSvgItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    //qDebug() << "Item clicked";
     QGraphicsSvgItem::mousePressEvent(event);
     event->accept();
+
     emit clicked(event->button());
 }

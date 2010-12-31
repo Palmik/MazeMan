@@ -39,27 +39,27 @@ void MazeEditorView::clickReceived(int x)
 {
     QPoint clickedPos(model().data()->translate(x));
 
-    qDebug() << "Clicked";
+    //qDebug() << "Clicked " << clickedPos.x() << clickedPos.y() << " (" << x << ") (MazeEditorView)";
 
     if ((model().data()->playerPosition() == clickedPos)) {
-        qDebug() << "1";
+        //qDebug() << "1";
         model_m.setEnemyPosition(clickedPos);
     }
     else if ((model().data()->enemyPosition() == clickedPos)) {
-        qDebug() << "2";
+        //qDebug() << "2";
         model_m.setPortalPosition(clickedPos);
     }
     else if ((model().data()->portalPosition() == clickedPos)) {
-        qDebug() << "3";
+        //qDebug() << "3";
         model_m.setObstacleAt(clickedPos, false);
         model_m.setPortalPosition(model_m.previousPortalPosition());
     }
     else if (!(model().data()->isObstacleAt(clickedPos))) {
-        qDebug() << "4";
+        //qDebug() << "4";
         model_m.setObstacleAt(clickedPos, true);
     }
     else {
-        qDebug() << "5";
+        //qDebug() << "5";
         model_m.setPlayerPosition(clickedPos);
     }
 
@@ -69,4 +69,5 @@ void MazeEditorView::clickReceived(int x)
     updateTileGraphicsAt(clickedPos);
 
     MazeView::clickReceived(x);
+    setFocus();
 }

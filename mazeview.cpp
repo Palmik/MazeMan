@@ -22,7 +22,6 @@
 #include "mazeview.h"
 #include "mazemodeldata.h"
 #include <QSignalMapper>
-#include <QDebug>
 #include <QCursor>
 #include <QKeyEvent>
 #include <cassert>
@@ -30,12 +29,12 @@
 #include "core/svgtheme.h"
 
 MazeView::MazeView(SvgTheme* theme_, QGraphicsItem* parent) :
-    QGraphicsSvgItem(parent), player_m(0), enemy_m(0), portal_m(0), theme_m(theme_), modelData_m(0), clickMapper_m(new QSignalMapper())
+    QGraphicsSvgItem(parent), player_m(0), enemy_m(0), portal_m(0), theme_m(theme_), modelData_m(0), clickMapper_m(0)
 {
 }
 
 MazeView::MazeView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* parent) :
-    QGraphicsSvgItem(parent), player_m(0), enemy_m(0), portal_m(0), theme_m(theme_), modelData_m(modelData_), clickMapper_m(new QSignalMapper())
+    QGraphicsSvgItem(parent), player_m(0), enemy_m(0), portal_m(0), theme_m(theme_), modelData_m(modelData_), clickMapper_m(0)
 {
     setFlags(flags() ^ QGraphicsItem::ItemIsFocusable);
     reload(modelData());
@@ -43,9 +42,9 @@ MazeView::MazeView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* p
 
 void MazeView::clickReceived(int x)
 {
-    Q_UNUSED(x);
+    QPoint point = modelData()->translate(x);
+    //qDebug() << "Clicked " << point.x() << point.y() << " (" << x << ") (MazeView)";
     setFocus();
-    qDebug() << "Clicked (MazeView)";
 }
 
 void MazeView::updatePlayerPosition()
@@ -86,10 +85,13 @@ void MazeView::updateTileGraphicsAt(QPoint p)
 
 void MazeView::reload(MazeModelData* modelData_)
 {
+    //qDebug() << "Reload: " << modelData_->width() << " * " << modelData_->height();
     modelData_m = modelData_;
     qDeleteAll(tiles_m);
     tiles_m.clear();
-    clickMapper_m->disconnect();
+
+    delete clickMapper_m;
+    clickMapper_m = new QSignalMapper(this);
 
     delete player_m;
     delete enemy_m;
@@ -115,8 +117,10 @@ void MazeView::reload(MazeModelData* modelData_)
             newTile->setElementId((modelData()->isObstacleAt(QPoint(x, y))) ? "tile_wall" : "tile_free");
 
             tiles_m.push_back(newTile);
+
             connect(newTile, SIGNAL(clicked(Qt::MouseButtons)), clickMapper_m, SLOT(map()));
             clickMapper_m->setMapping(newTile, modelData()->translate(QPoint(x, y)));
+            //qDebug() << clickMapper_m->mapping(modelData()->translate(QPoint(x, y))) << " tile " << x << y << " connected";
         }
     }
 

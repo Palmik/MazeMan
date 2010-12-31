@@ -50,12 +50,13 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     QGraphicsScene* scene = new QGraphicsScene(this);
     programView()->setScene(scene);
 
-    connect(mainMenu(), SIGNAL(openMap()), this, SLOT(openNewMap()));
-    connect(mainMenu(), SIGNAL(openCampaign()), this, SLOT(openNewCampaign()));
-    connect(mainMenu(), SIGNAL(quit()), this, SIGNAL(quit()));
-    connect(mainMenu(), SIGNAL(createMap()), this, SLOT(createMap()));
+    connect(mainMenu(), SIGNAL(openMapRequested()), this, SLOT(openNewMap()));
+    connect(mainMenu(), SIGNAL(openCampaignRequested()), this, SLOT(openNewCampaign()));
+    connect(mainMenu(), SIGNAL(quitRequested()), this, SIGNAL(quitRequested()));
+    connect(mainMenu(), SIGNAL(quitRequested()), this, SLOT(close()));
+    connect(mainMenu(), SIGNAL(createMapRequested()), this, SLOT(createMap()));
 
-    connect(ui->actionQuit, SIGNAL(triggered()), this, SIGNAL(quit()));
+    connect(ui->actionQuit, SIGNAL(triggered()), this, SIGNAL(quitRequested()));
     connect(ui->actionStartMap, SIGNAL(triggered()), this, SLOT(openNewMap()));
     connect(ui->actionStartCampaign, SIGNAL(triggered()), this, SLOT(openNewCampaign()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveCurrentMap()));
@@ -67,18 +68,18 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     programView()->setBackgroundRenderer(theme()->renderer());
     programView()->setBackgroundElementId("background");
     programView()->setCacheMode(QGraphicsView::CacheBackground);
-
-    show();
-
-    mainMenu()->hideQuit();
-    mainMenu()->exec();
-    mainMenu()->showQuit();
 }
 
 GameWindow::~GameWindow()
 {
     delete ui;
     delete modelData_m;
+}
+
+void GameWindow::start()
+{
+    show();
+    mainMenu()->exec();
 }
 
 void GameWindow::openNewMap()

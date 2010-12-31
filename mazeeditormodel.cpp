@@ -21,7 +21,6 @@
 
 #include "mazeeditormodel.h"
 #include <QSignalMapper>
-#include <QDebug>
 #include "core/clickablesvgitem.h"
 #include "core/svgtheme.h"
 

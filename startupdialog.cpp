@@ -33,10 +33,10 @@ StartupDialog::StartupDialog(bool showQuit, QWidget *parent) :
     connect(ui->createMap, SIGNAL(clicked()), this, SLOT(accept()));
     connect(ui->quit, SIGNAL(clicked()), this, SLOT(accept()));
 
-    connect(ui->openMap, SIGNAL(clicked()), this, SIGNAL(openMap()));
-    connect(ui->openCampaign, SIGNAL(clicked()), this, SIGNAL(openCampaign()));
-    connect(ui->createMap, SIGNAL(clicked()), this, SIGNAL(createMap()));
-    connect(ui->quit, SIGNAL(clicked()), this, SIGNAL(quit()));
+    connect(ui->openMap, SIGNAL(clicked()), this, SIGNAL(openMapRequested()));
+    connect(ui->openCampaign, SIGNAL(clicked()), this, SIGNAL(openCampaignRequested()));
+    connect(ui->createMap, SIGNAL(clicked()), this, SIGNAL(createMapRequested()));
+    connect(ui->quit, SIGNAL(clicked()), this, SIGNAL(quitRequested()));
 
     if (!showQuit) {
         hideQuit();

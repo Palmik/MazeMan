@@ -12,7 +12,8 @@ HEADERS += core/svgresizingview.h \
     mazeeditorview.h \
     mazemodeldata.h \
     mazegamemodel.h \
-    createmapdialog.h
+    createmapdialog.h \
+    mapeditordialog.h
 SOURCES += core/svgresizingview.cpp \
     core/resizingview.cpp \
     main.cpp \
@@ -25,8 +26,10 @@ SOURCES += core/svgresizingview.cpp \
     mazeeditorview.cpp \
     mazemodeldata.cpp \
     mazegamemodel.cpp \
-    createmapdialog.cpp
+    createmapdialog.cpp \
+    mapeditordialog.cpp
 RESOURCES += resources.qrc
 FORMS += gamewindow.ui \
     startupdialog.ui \
-    createmapdialog.ui
+    createmapdialog.ui \
+    mapeditordialog.ui

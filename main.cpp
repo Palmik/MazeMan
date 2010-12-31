@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     SvgTheme* myTheme = new SvgTheme(QString(":/resources/themes/default/sprite.svg"));
-    GameWindow window(myTheme);
-    QObject::connect(&window, SIGNAL(quit()), &app, SLOT(quit()));
-    //window.show();
+    GameWindow game(myTheme);
+    QObject::connect(&game, SIGNAL(quitRequested()), &app, SLOT(quit()));
+    game.start();
     return app.exec();
 }

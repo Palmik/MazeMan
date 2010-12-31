@@ -70,34 +70,45 @@ void MazeGameView::clickReceived(int x)
 {
     QPoint clickedPos(model().data()->translate(x));
 
+    qDebug() << "Clicked " << clickedPos.x() << clickedPos.y() << " (" << x << ") (MazeGameView)";
+    qDebug() << "Player pos " << model().data()->playerPosition().x() << model().data()->playerPosition().y();
+
     int diffX = model().data()->playerPosition().x() - clickedPos.x();
     int diffY = model().data()->playerPosition().y() - clickedPos.y();
+
+    qDebug() << diffX << diffY;
+
+    bool validClick = false;
 
     MazeGameModel::Move move;
 
     if (diffX == -1 && diffY == 0) {
-        //qDebug() << "R";
+        qDebug() << "R";
         move = MazeGameModel::Right;
+        validClick = true;
     }
     else if (diffX == 1 && diffY == 0) {
-        //qDebug() << "L";
+        qDebug() << "L";
         move = MazeGameModel::Left;
+        validClick = true;
     }
     else if (diffX == 0 && diffY == -1) {
-        //qDebug() << "D";
+        qDebug() << "D";
         move = MazeGameModel::Down;
+        validClick = true;
     }
     else if (diffX == 0 && diffY == 1) {
-        //qDebug() << "U";
+        qDebug() << "U";
         move = MazeGameModel::Up;
-    }
-    else {
-        return;
+        validClick = true;
     }
 
-    handlePlayerMove(move);
+    if (false) {
+        handlePlayerMove(move);
+    }
 
     MazeView::clickReceived(x);
+    setFocus();
 }
 
 void MazeGameView::handlePlayerMove(MazeGameModel::Move move)

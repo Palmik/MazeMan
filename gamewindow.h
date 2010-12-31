@@ -43,8 +43,10 @@ public:
     GameWindow(SvgTheme* theme, QWidget* parent = 0);
     ~GameWindow();
 
+    void start();
+
 signals:
-    void quit();
+    void quitRequested();
 
 protected:
     void changeEvent(QEvent* e);
