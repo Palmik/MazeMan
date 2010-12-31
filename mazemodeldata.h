@@ -44,7 +44,7 @@ public:
 
     bool isEmpty() const { return ((width() * height()) == 0); }
 
-    QPoint translate(uint n) const { return QPoint(n % width_m, n / height_m); }
+    QPoint translate(uint n) const { return QPoint(n % width_m, n / width_m); }
     uint translate(QPoint p) const { return (p.y() * width_m) + p.x(); }
 
     uint width() const { return width_m; }

@@ -78,32 +78,32 @@ void MazeGameView::clickReceived(int x)
 
     qDebug() << diffX << diffY;
 
-    bool validClick = false;
+    bool validMoveClick = false;
 
     MazeGameModel::Move move;
 
     if (diffX == -1 && diffY == 0) {
         qDebug() << "R";
         move = MazeGameModel::Right;
-        validClick = true;
+        validMoveClick = true;
     }
     else if (diffX == 1 && diffY == 0) {
         qDebug() << "L";
         move = MazeGameModel::Left;
-        validClick = true;
+        validMoveClick = true;
     }
     else if (diffX == 0 && diffY == -1) {
         qDebug() << "D";
         move = MazeGameModel::Down;
-        validClick = true;
+        validMoveClick = true;
     }
     else if (diffX == 0 && diffY == 1) {
         qDebug() << "U";
         move = MazeGameModel::Up;
-        validClick = true;
+        validMoveClick = true;
     }
 
-    if (false) {
+    if (validMoveClick) {
         handlePlayerMove(move);
     }
 

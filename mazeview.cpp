@@ -42,8 +42,7 @@ MazeView::MazeView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* p
 
 void MazeView::clickReceived(int x)
 {
-    QPoint point = modelData()->translate(x);
-    //qDebug() << "Clicked " << point.x() << point.y() << " (" << x << ") (MazeView)";
+    Q_UNUSED(x);
     setFocus();
 }
 
@@ -120,7 +119,7 @@ void MazeView::reload(MazeModelData* modelData_)
 
             connect(newTile, SIGNAL(clicked(Qt::MouseButtons)), clickMapper_m, SLOT(map()));
             clickMapper_m->setMapping(newTile, modelData()->translate(QPoint(x, y)));
-            //qDebug() << clickMapper_m->mapping(modelData()->translate(QPoint(x, y))) << " tile " << x << y << " connected";
+            //qDebug() << clickMapper_m->mapping(modelData()->translate(QPoint(x, y))) << " tile " << x << y << "(" << modelData()->translate(QPoint(x, y)) << ") " << modelData()->translate(modelData()->translate(QPoint(x, y))) << "r connected";
         }
     }
 
