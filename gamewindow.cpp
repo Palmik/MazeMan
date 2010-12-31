@@ -30,6 +30,7 @@
 #include "core/svgtheme.h"
 #include "mazeeditorview.h"
 #include "mazegameview.h"
+#include "mapeditordialog.h"
 #include "createmapdialog.h"
 
 GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
@@ -109,12 +110,35 @@ void GameWindow::startCampaign(const QString& campaignDirectory)
 
 void GameWindow::createMap()
 {
-    CreateMapDialog dialog;
+    MapEditorDialog dialog;
     if (dialog.exec()) {
-        editorMode_m = true;
-        modelData()->reload(dialog.enteredWidth(), dialog.enteredHeight(), dialog.enteredName(), false);
-        editorView()->reload(modelData());
-        switchToEditorView();
+
+        switch (dialog.chosenOption()) {
+        case MapEditorDialog::CreateNewMap : {
+                CreateMapDialog createDialog;
+                if (dialog.exec()) {
+                    editorMode_m = true;
+                    modelData()->reload(createDialog.enteredWidth(), createDialog.enteredHeight(), createDialog.enteredName(), false);
+                }
+            }
+            break;
+        case MapEditorDialog::EditExistingMap : {
+                QString mapFileName = QFileDialog::getOpenFileName(this, tr("Open Map File"), "./", tr("Maps (*.map)"));
+                if (!mapFileName.isEmpty()) {
+                    std::ifstream mapFile(mapFileName.toStdString().c_str());
+                    if (mapFile.is_open() && mapFile.good()) {
+                        editorMode_m = true;
+                        modelData()->reload(mapFile);
+                    }
+                }
+            }
+            break;
+        }
+
+        if (editorMode_m) {
+            editorView()->reload(modelData());
+            switchToEditorView();
+        }
     }
 }
 
