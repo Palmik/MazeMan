@@ -1,35 +1,38 @@
 QT += svg
-HEADERS += core/svgresizingview.h \
-    core/resizingview.h \
-    gamewindow.h \
-    mazeview.h \
-    core/clickablesvgitem.h \
+HEADERS += dialogs/startupdialog.h \
+    dialogs/mapeditordialog.h \
+    dialogs/createmapdialog.h \
     core/svgtheme.h \
-    campaign.h \
-    startupdialog.h \
-    mazeeditormodel.h \
-    mazegameview.h \
-    mazeeditorview.h \
+    core/svgresizingview.h \
+    core/resizingview.h \
+    core/clickablesvgitem.h \
     mazemodeldata.h \
+    mazeview.h \
+    mazegameview.h \
     mazegamemodel.h \
-    createmapdialog.h \
-    mapeditordialog.h
-SOURCES += core/svgresizingview.cpp \
+    mazeeditorview.h \
+    mazeeditormodel.h \
+    gamewindow.h \
+    campaign.h \
+    dialogs/textbuttonsdialog.h
+SOURCES += dialogs/startupdialog.cpp \
+    dialogs/mapeditordialog.cpp \
+    dialogs/createmapdialog.cpp \
+    core/svgresizingview.cpp \
     core/resizingview.cpp \
+    core/clickablesvgitem.cpp \
+    mazemodeldata.cpp \
+    mazeview.cpp \
+    mazegameview.cpp \
+    mazegamemodel.cpp \
+    mazeeditorview.cpp \
+    mazeeditormodel.cpp \
     main.cpp \
     gamewindow.cpp \
-    mazeview.cpp \
-    core/clickablesvgitem.cpp \
-    startupdialog.cpp \
-    mazeeditormodel.cpp \
-    mazegameview.cpp \
-    mazeeditorview.cpp \
-    mazemodeldata.cpp \
-    mazegamemodel.cpp \
-    createmapdialog.cpp \
-    mapeditordialog.cpp
+    dialogs/textbuttonsdialog.cpp
+FORMS += dialogs/startupdialog.ui \
+    dialogs/mapeditordialog.ui \
+    dialogs/createmapdialog.ui \
+    gamewindow.ui \
+    dialogs/textbuttonsdialog.ui
 RESOURCES += resources.qrc
-FORMS += gamewindow.ui \
-    startupdialog.ui \
-    createmapdialog.ui \
-    mapeditordialog.ui

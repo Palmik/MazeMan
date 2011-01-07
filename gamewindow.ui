@@ -55,9 +55,16 @@
     <addaction name="actionStartTestGame"/>
     <addaction name="actionStopTestGame"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+   </widget>
    <addaction name="menuGame"/>
    <addaction name="menuEditor"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionFullscreen">
@@ -111,6 +118,14 @@
   <action name="actionStopTestGame">
    <property name="text">
     <string>Stop Test Game</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>

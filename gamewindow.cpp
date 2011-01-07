@@ -24,14 +24,17 @@
 
 #include <QGraphicsSvgItem>
 #include <QDebug>
+#include <QLabel>
 #include <QFileDialog>
 #include <fstream>
 #include "core/svgresizingview.h"
 #include "core/svgtheme.h"
 #include "mazeeditorview.h"
 #include "mazegameview.h"
-#include "mapeditordialog.h"
-#include "createmapdialog.h"
+#include "dialogs/mapeditordialog.h"
+#include "dialogs/createmapdialog.h"
+#include "dialogs/startupdialog.h"
+#include "dialogs/textbuttonsdialog.h"
 
 GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     QMainWindow(parent),
@@ -69,6 +72,7 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     connect(ui->actionEditMap, SIGNAL(triggered()), this, SLOT(editExistingMap()));
     connect(ui->actionStartTestGame, SIGNAL(triggered()), this, SLOT(startTestGame()));
     connect(ui->actionStopTestGame, SIGNAL(triggered()), this, SLOT(stopTestGame()));
+    connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(showHelpDialog()));
 
     programView()->setAspectRatioMode(Qt::KeepAspectRatio);
     programView()->setBackgroundRenderer(theme()->renderer());
@@ -85,7 +89,9 @@ GameWindow::~GameWindow()
 void GameWindow::start()
 {
     show();
+    mainMenu()->hideQuit();
     mainMenu()->exec();
+    mainMenu()->showQuit();
 }
 
 void GameWindow::openNewMap()
@@ -169,6 +175,7 @@ void GameWindow::startMap(const QString& mapPath)
 {
     std::ifstream mapFile(mapPath.toStdString().c_str());
     if (mapFile.is_open() && mapFile.good()) {
+        currentMapPath_m = mapPath;
         modelData()->reload(mapFile);
         gameView()->reload(modelData());
         enterGameMode();
@@ -207,15 +214,31 @@ void GameWindow::handlePlayerLost()
 {
     if (!isInEditorMode()) {
         if (campaignInProgress()) {
-            handlePlayerLostCampaign();
+            if (retryLastMap()) {
+                startMap(currentMapPath_m);
+            }
+            else {
+                handlePlayerLostCampaign();
+            }
         }
         else {
-            mainMenu()->exec();
+            if (retryLastMap()) {
+                startMap(currentMapPath_m);
+            }
+            else {
+                mainMenu()->exec();
+            }
         }
     }
     else {
         stopTestGame();
     }
+}
+
+bool GameWindow::retryLastMap()
+{
+    TextButtonsDialog retryDialog("You have lost. Want to try again?", "Yes", "No");
+    return retryDialog.exec();
 }
 
 void GameWindow::saveCurrentMap()
@@ -274,22 +297,40 @@ void GameWindow::switchToEditorView()
 {
     if (gameView_m) {
         gameView()->hide();
+        if (gameView()->scene()) {
+            programView()->scene()->removeItem(gameView());
+        }
     }
+
+    if (!editorView()->scene()) {
+        programView()->scene()->addItem(editorView());
+    }
+
     editorView()->reload(modelData());
     editorView()->show();
     editorView()->setFocus();
     programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
+    programView()->fitInView(programView()->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void GameWindow::switchToGameView()
 {
     if (editorView_m) {
         editorView()->hide();
+        if (editorView()->scene()) {
+            programView()->scene()->removeItem(editorView());
+        }
     }
+
+    if (!gameView()->scene()) {
+        programView()->scene()->addItem(gameView());
+    }
+
     gameView()->reload(modelData());
     gameView()->show();
     gameView()->setFocus();
     programView()->setSceneRect(programView()->scene()->itemsBoundingRect());
+    programView()->fitInView(programView()->sceneRect(), Qt::KeepAspectRatio);
 }
 
 MazeModelData* GameWindow::modelData()
@@ -338,6 +379,45 @@ void GameWindow::handlePlayerWonCampaign()
 SvgResizingView* GameWindow::programView()
 {
     return ui->gameView;
+}
+
+void GameWindow::showHelpDialog()
+{
+
+    QDialog helpDialog(this);
+    QLabel* helpText = new QLabel(&helpDialog);
+    helpText->setTextFormat(Qt::RichText);
+    helpText->setText(tr("<h3>The Help</h3> \
+                         <ul> \
+                         <li> \
+                         <h4>The Game</h4> \
+                             <ul> \
+                                 <li>Start game by clicking \'<em>Game -> Start Game</em>\' and selecting map file.</li> \
+                                 <li>Start campaign by clicking \'<em>Game -> Start Campaign</em>\' and selecting folder with map files.</li> \
+                                 <li>Controls: \
+                                     <ul> \
+                                         <li>The arrows</li> \
+                                         <li>The mouse (by cliking on the nearby tiles)</li> \
+                                     </ul> \
+                                 </li> \
+                             </ul> \
+                         </li> \
+                         <li> \
+                         <h4>The Editor</h4> \
+                             <ul> \
+                                 <li>Edit exiting map by clicking \'<em>Editor -> Edit Map</em>\' and selecting map file.</li> \
+                                 <li>Create new map by clicking \'<em>Editor -> Create Map</em>\' and entering the map name and dimensions.</li> \
+                                 <li>You can test the map you are editing by clicking \'<em>Editor -> Test Map</em>\'.</li> \
+                             </ul> \
+                         </li> \
+                         </ul>"));
+
+    QVBoxLayout* l = new QVBoxLayout(&helpDialog);
+    l->addWidget(helpText);
+
+    helpDialog.setLayout(l);
+
+    helpDialog.exec();
 }
 
 void GameWindow::on_actionFullscreen_triggered()

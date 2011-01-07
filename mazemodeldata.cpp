@@ -21,6 +21,8 @@
 
 #include "mazemodeldata.h"
 
+#include <QDebug>
+
 MazeModelData::MazeModelData(std::istream &in) :
     matrix_m(0, false), width_m(0), height_m(0), playerPosition_m(0, 0), enemyPosition_m(0, 0), portalPosition_m(0, 0), mapName_m("Empty")
 {
@@ -30,7 +32,7 @@ MazeModelData::MazeModelData(std::istream &in) :
 MazeModelData::MazeModelData(uint width, uint height, QString const& mapName, bool obstacles) :
     matrix_m(width * height, obstacles), width_m(width), height_m(height), playerPosition_m(0, 0), enemyPosition_m(0, 0), portalPosition_m(0, 0), mapName_m(mapName)
 {
-    save(std::cerr);
+    //save(std::cerr);
 }
 
 MazeModelData::MazeModelData() :
@@ -51,7 +53,7 @@ void MazeModelData::reload(std::istream& in)
         std::size_t length = buffer.length();
         if ((length > 0) && (buffer.at(0) == '#')) {
             width_m = length;
-            qDebug() << "Width: " << width_m;
+            //qDebug() << "Width: " << width_m;
             for (size_t i = 0; i < length; ++i) {
                 matrix_m.push_back((buffer.at(i) == '#'));
                 switch (buffer.at(i)) {
@@ -74,7 +76,7 @@ void MazeModelData::reload(std::istream& in)
         }
     }
 
-    save(std::cerr);
+    //save(std::cerr);
 }
 
 void MazeModelData::reload(uint width, uint height, QString const& mapName, bool obstacles)

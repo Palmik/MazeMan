@@ -23,7 +23,6 @@
 #define MAZEMODELDATA_H
 
 #include <QPoint>
-#include <QDebug>
 #include <QVector>
 #include <QString>
 #include <iostream>

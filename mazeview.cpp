@@ -24,6 +24,7 @@
 #include <QSignalMapper>
 #include <QCursor>
 #include <QKeyEvent>
+#include <QDebug>
 #include <cassert>
 #include "core/clickablesvgitem.h"
 #include "core/svgtheme.h"
@@ -48,17 +49,44 @@ void MazeView::clickReceived(int x)
 
 void MazeView::updatePlayerPosition()
 {
-    playerItem()->setPos(tiles_m.at(modelData()->translate(modelData()->playerPosition()))->pos());
+    if (tiles_m.empty()) {
+        return;
+    }
+
+    QSizeF tileSize = tiles_m.at(0)->boundingRect().size();
+    QSizeF playerSize = player_m->boundingRect().size();
+
+    QPointF difference = QPointF((tileSize.width() - playerSize.width()) / 2, (tileSize.height() - playerSize.height()) / 2);
+
+    playerItem()->setPos(tiles_m.at(modelData()->translate(modelData()->playerPosition()))->pos() + difference);
 }
 
 void MazeView::updateEnemyPosition()
 {
-    enemyItem()->setPos(tiles_m.at(modelData()->translate(modelData()->enemyPosition()))->pos());
+    if (tiles_m.empty()) {
+        return;
+    }
+
+    QSizeF tileSize = tiles_m.at(0)->boundingRect().size();
+    QSizeF enemySize = enemy_m->boundingRect().size();
+
+    QPointF difference = QPointF((tileSize.width() - enemySize.width()) / 2, (tileSize.height() - enemySize.height()) / 2);
+
+    enemyItem()->setPos(tiles_m.at(modelData()->translate(modelData()->enemyPosition()))->pos() + difference);
 }
 
 void MazeView::updatePortalPosition()
 {
-    portalItem()->setPos(tiles_m.at(modelData()->translate(modelData()->portalPosition()))->pos());
+    if (tiles_m.empty()) {
+        return;
+    }
+
+    QSizeF tileSize = tiles_m.at(0)->boundingRect().size();
+    QSizeF portalSize = portal_m->boundingRect().size();
+
+    QPointF difference = QPointF((tileSize.width() - portalSize.width()) / 2, (tileSize.height() - portalSize.height()) / 2);
+
+    portalItem()->setPos(tiles_m.at(modelData()->translate(modelData()->portalPosition()))->pos() + difference);
 }
 
 void MazeView::updateTilesPositions()

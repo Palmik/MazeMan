@@ -70,35 +70,35 @@ void MazeGameView::clickReceived(int x)
 {
     QPoint clickedPos(model().data()->translate(x));
 
-    qDebug() << "Clicked " << clickedPos.x() << clickedPos.y() << " (" << x << ") (MazeGameView)";
-    qDebug() << "Player pos " << model().data()->playerPosition().x() << model().data()->playerPosition().y();
+    //qDebug() << "Clicked " << clickedPos.x() << clickedPos.y() << " (" << x << ") (MazeGameView)";
+    //qDebug() << "Player pos " << model().data()->playerPosition().x() << model().data()->playerPosition().y();
 
     int diffX = model().data()->playerPosition().x() - clickedPos.x();
     int diffY = model().data()->playerPosition().y() - clickedPos.y();
 
-    qDebug() << diffX << diffY;
+    //qDebug() << diffX << diffY;
 
     bool validMoveClick = false;
 
     MazeGameModel::Move move;
 
     if (diffX == -1 && diffY == 0) {
-        qDebug() << "R";
+        //qDebug() << "R";
         move = MazeGameModel::Right;
         validMoveClick = true;
     }
     else if (diffX == 1 && diffY == 0) {
-        qDebug() << "L";
+        //qDebug() << "L";
         move = MazeGameModel::Left;
         validMoveClick = true;
     }
     else if (diffX == 0 && diffY == -1) {
-        qDebug() << "D";
+        //qDebug() << "D";
         move = MazeGameModel::Down;
         validMoveClick = true;
     }
     else if (diffX == 0 && diffY == 1) {
-        qDebug() << "U";
+        //qDebug() << "U";
         move = MazeGameModel::Up;
         validMoveClick = true;
     }

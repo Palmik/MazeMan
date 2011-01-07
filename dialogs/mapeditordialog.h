@@ -19,56 +19,39 @@
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "mazeeditorview.h"
+#ifndef MAPEDITORDIALOG_H
+#define MAPEDITORDIALOG_H
 
-#include <QDebug>
+#include <QDialog>
 
-MazeEditorView::MazeEditorView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* parent) :
-    MazeView(theme_, parent), model_m(modelData_)
-{
-    reload(model().data());
+namespace Ui {
+    class MapEditorDialog;
 }
 
-void MazeEditorView::reload(MazeModelData* modelData_)
-{
-    model_m = MazeEditorModel(modelData_);
+class MapEditorDialog : public QDialog {
+    Q_OBJECT
+public:
+    MapEditorDialog(QWidget *parent = 0);
+    ~MapEditorDialog();
 
-    MazeView::reload(model().data());
-}
+    enum Option {
+        CreateNewMap,
+        EditExistingMap
+    };
 
-void MazeEditorView::clickReceived(int x)
-{
-    QPoint clickedPos(model().data()->translate(x));
+    Option chosenOption() { return chosenOption_m; }
 
-    //qDebug() << "Clicked " << clickedPos.x() << clickedPos.y() << " (" << x << ") (MazeEditorView)";
+protected:
+    void changeEvent(QEvent *e);
 
-    if ((model().data()->playerPosition() == clickedPos)) {
-        //qDebug() << "1";
-        model_m.setEnemyPosition(clickedPos);
-    }
-    else if ((model().data()->enemyPosition() == clickedPos)) {
-        //qDebug() << "2";
-        model_m.setPortalPosition(clickedPos);
-    }
-    else if ((model().data()->portalPosition() == clickedPos)) {
-        //qDebug() << "3";
-        model_m.setObstacleAt(clickedPos, false);
-        model_m.setPortalPosition(model_m.previousPortalPosition());
-    }
-    else if (!(model().data()->isObstacleAt(clickedPos))) {
-        //qDebug() << "4";
-        model_m.setObstacleAt(clickedPos, true);
-    }
-    else {
-        //qDebug() << "5";
-        model_m.setPlayerPosition(clickedPos);
-    }
+private:
+    Ui::MapEditorDialog *ui;
 
-    updatePlayerPosition();
-    updateEnemyPosition();
-    updatePortalPosition();
-    updateTileGraphicsAt(clickedPos);
+    Option chosenOption_m;
 
-    MazeView::clickReceived(x);
-    setFocus();
-}
+private slots:
+    void on_editExistingMapButton_clicked();
+    void on_createNewMapButton_clicked();
+};
+
+#endif // MAPEDITORDIALOG_H

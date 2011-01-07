@@ -25,12 +25,12 @@
 #include <QMainWindow>
 #include "campaign.h"
 #include "mazegamemodel.h"
-#include "startupdialog.h"
 
 class SvgResizingView;
 class MazeEditorView;
 class MazeGameView;
 class SvgTheme;
+class StartupDialog;
 
 namespace Ui {
     class GameWindow;
@@ -57,7 +57,9 @@ private:
 private slots:
     void startCampaign(const QString& campaignDirectory);
     void startMap(const QString& mapPath);
+    void showHelpDialog();
     void startMapEditor();
+    bool retryLastMap();
     bool createNewMap();
     bool editExistingMap();
     void stopCampaign();
@@ -88,6 +90,7 @@ private:
     StartupDialog* mainMenu() const { return mainMenu_m; }
 
     Campaign* currentCampaign_m;
+    QString currentMapPath_m;
     SvgTheme* theme_m;
     MazeGameView* gameView_m;
     MazeEditorView* editorView_m;

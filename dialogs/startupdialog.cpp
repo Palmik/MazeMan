@@ -19,56 +19,55 @@
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "mazeeditorview.h"
+#include "startupdialog.h"
+#include "ui_startupdialog.h"
 
-#include <QDebug>
-
-MazeEditorView::MazeEditorView(MazeModelData* modelData_, SvgTheme* theme_, QGraphicsItem* parent) :
-    MazeView(theme_, parent), model_m(modelData_)
+StartupDialog::StartupDialog(bool showQuit, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::StartupDialog)
 {
-    reload(model().data());
+    ui->setupUi(this);
+
+    connect(ui->openMap, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ui->openCampaign, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ui->createMap, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ui->quit, SIGNAL(clicked()), this, SLOT(accept()));
+
+    connect(ui->openMap, SIGNAL(clicked()), this, SIGNAL(openMapRequested()));
+    connect(ui->openCampaign, SIGNAL(clicked()), this, SIGNAL(openCampaignRequested()));
+    connect(ui->createMap, SIGNAL(clicked()), this, SIGNAL(createMapRequested()));
+    connect(ui->quit, SIGNAL(clicked()), this, SIGNAL(quitRequested()));
+
+    if (!showQuit) {
+        hideQuit();
+    }
 }
 
-void MazeEditorView::reload(MazeModelData* modelData_)
+StartupDialog::~StartupDialog()
 {
-    model_m = MazeEditorModel(modelData_);
-
-    MazeView::reload(model().data());
+    delete ui;
 }
 
-void MazeEditorView::clickReceived(int x)
+void StartupDialog::showQuit()
 {
-    QPoint clickedPos(model().data()->translate(x));
+    ui->quit->show();
+    resize(minimumSize());
+}
 
-    //qDebug() << "Clicked " << clickedPos.x() << clickedPos.y() << " (" << x << ") (MazeEditorView)";
+void StartupDialog::hideQuit()
+{
+    ui->quit->hide();
+    resize(minimumSize());
+}
 
-    if ((model().data()->playerPosition() == clickedPos)) {
-        //qDebug() << "1";
-        model_m.setEnemyPosition(clickedPos);
+void StartupDialog::changeEvent(QEvent *e)
+{
+    QWidget::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        ui->retranslateUi(this);
+        break;
+    default:
+        break;
     }
-    else if ((model().data()->enemyPosition() == clickedPos)) {
-        //qDebug() << "2";
-        model_m.setPortalPosition(clickedPos);
-    }
-    else if ((model().data()->portalPosition() == clickedPos)) {
-        //qDebug() << "3";
-        model_m.setObstacleAt(clickedPos, false);
-        model_m.setPortalPosition(model_m.previousPortalPosition());
-    }
-    else if (!(model().data()->isObstacleAt(clickedPos))) {
-        //qDebug() << "4";
-        model_m.setObstacleAt(clickedPos, true);
-    }
-    else {
-        //qDebug() << "5";
-        model_m.setPlayerPosition(clickedPos);
-    }
-
-    updatePlayerPosition();
-    updateEnemyPosition();
-    updatePortalPosition();
-    updateTileGraphicsAt(clickedPos);
-
-    MazeView::clickReceived(x);
-    setFocus();
 }
