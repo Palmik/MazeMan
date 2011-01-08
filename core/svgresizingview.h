@@ -30,7 +30,7 @@ class SvgResizingView : public ResizingView
 {
 public:
     SvgResizingView(QWidget* parent = 0);
-    SvgResizingView(Qt::AspectRatioMode = Qt::KeepAspectRatio, QWidget* parent = 0);
+    SvgResizingView(Qt::AspectRatioMode, QWidget* parent = 0);
     SvgResizingView(QGraphicsScene* scene, Qt::AspectRatioMode = Qt::KeepAspectRatio, QWidget* parent = 0);
     SvgResizingView(QSvgRenderer* backgroundRenderer, Qt::AspectRatioMode = Qt::KeepAspectRatio, QWidget* parent = 0);
     SvgResizingView(QSvgRenderer* backgroundRenderer, QGraphicsScene* scene, Qt::AspectRatioMode = Qt::KeepAspectRatio, QWidget* parent = 0);

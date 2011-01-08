@@ -30,7 +30,7 @@ class ResizingView : public QGraphicsView
 {
 public:
     ResizingView(QWidget* parent = 0);
-    ResizingView(Qt::AspectRatioMode = Qt::KeepAspectRatio, QWidget* parent = 0);
+    ResizingView(Qt::AspectRatioMode, QWidget* parent = 0);
     ResizingView(QGraphicsScene* scene, Qt::AspectRatioMode = Qt::KeepAspectRatio, QWidget* parent = 0);
 
     void setAspectRatioMode(Qt::AspectRatioMode aspectRatioMode) { aspectRatioMode_m = aspectRatioMode; fitInView(sceneRect(), aspectRatioMode_m); }

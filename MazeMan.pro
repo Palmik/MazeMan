@@ -1,3 +1,4 @@
+QMAKE_CXXFLAGS += -g -O0 -ansi -pedantic -Wall -Wextra
 QT += svg
 HEADERS += dialogs/startupdialog.h \
     dialogs/mapeditordialog.h \
