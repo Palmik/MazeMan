@@ -27,8 +27,8 @@ CreateMapDialog::CreateMapDialog(QWidget *parent) :
     ui(new Ui::CreateMapDialog)
 {
     ui->setupUi(this);
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->acceptButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ui->rejectButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
 CreateMapDialog::~CreateMapDialog()
