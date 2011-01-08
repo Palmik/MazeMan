@@ -202,7 +202,13 @@ void GameWindow::handlePlayerWon()
             }
         }
         else {
-            mainMenu()->exec();
+            TextButtonsDialog congratsDialog("Congratulations, you have escaped the " + modelData()->mapName() + " maze!", "Continue", "Quit");
+            if (congratsDialog.exec()) {
+                mainMenu()->exec();
+            }
+            else {
+                emit quitRequested();
+            }
         }
     }
     else {
@@ -373,7 +379,13 @@ void GameWindow::handlePlayerLostCampaign()
 
 void GameWindow::handlePlayerWonCampaign()
 {
-    mainMenu()->exec();
+    TextButtonsDialog congratsDialog("Congratulations, you have completed the " + currentCampaign_m->name() + " campaign!", "Continue", "Quit");
+    if (congratsDialog.exec()) {
+        mainMenu()->exec();
+    }
+    else {
+        emit quitRequested();
+    }
 }
 
 SvgResizingView* GameWindow::programView()

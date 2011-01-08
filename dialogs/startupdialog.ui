@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>131</width>
-    <height>112</height>
+    <height>116</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,21 +17,21 @@
    <item>
     <widget class="QPushButton" name="openMap">
      <property name="text">
-      <string>Open Map</string>
+      <string>Start Skirmish</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="openCampaign">
      <property name="text">
-      <string>Open Campaign</string>
+      <string>Start Campaign</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="createMap">
      <property name="text">
-      <string>Create Map</string>
+      <string>Editor</string>
      </property>
     </widget>
    </item>
