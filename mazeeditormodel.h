@@ -47,8 +47,11 @@ public:
     QPoint previousPortalPosition() { return previousPortalPosition_m; }
 
 private:
+    void validateMapIfNeeded();
+    bool isValidMap() const;
     void placeObstaclesAtBorders();
     bool isBorderAt(QPoint p) const;
+    bool isNotOccupiedTile(QPoint p) const;
     uint freeTilesCount() const;
 
     QPoint previousPlayerPosition_m;

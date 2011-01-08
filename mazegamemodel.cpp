@@ -71,7 +71,7 @@ bool MazeGameModel::movePlayer(Move move)
 
 bool MazeGameModel::isValidEnemyMove(Move m) const
 {
-    return (!data()->isObstacleAt(movePoint(data()->enemyPosition(), m)) && (data()->portalPosition() != movePoint(data()->enemyPosition(), m)) && availableEnemyMoves_m.contains(m));
+    return (!data()->isObstacleAt(movePoint(data()->enemyPosition(), m)) && availableEnemyMoves_m.contains(m));
 }
 
 bool MazeGameModel::isValidPlayerMove(Move m) const
