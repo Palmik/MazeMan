@@ -99,6 +99,10 @@ private:
     bool campaignInProgress_m;
     bool editorMode_m;
     bool testGameInProgress_m;
+
+    QPoint oldPlayerPos_m;
+    QPoint oldEnemyPos_m;
+    QPoint oldPortalPos_m;
 };
 
 #endif // GAMEWINDOW_H

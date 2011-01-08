@@ -26,6 +26,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QFileDialog>
+#include <iostream>
 #include <fstream>
 #include "core/svgresizingview.h"
 #include "core/svgtheme.h"
@@ -47,7 +48,10 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     mainMenu_m(new StartupDialog()),
     campaignInProgress_m(false),
     editorMode_m(false),
-    testGameInProgress_m(false)
+    testGameInProgress_m(false),
+    oldPlayerPos_m(0, 0),
+    oldEnemyPos_m(0, 0),
+    oldPortalPos_m(0, 0)
 {
     ui->setupUi(this);
 
@@ -56,7 +60,8 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
 
     ui->actionStartTestGame->setVisible(false);
     ui->actionStopTestGame->setVisible(false);
-    ui->actionSave->setVisible(false);
+    ui->actionSaveGame->setVisible(false);
+    ui->actionSaveEditor->setVisible(false);
 
     connect(mainMenu(), SIGNAL(openMapRequested()), this, SLOT(openNewMap()));
     connect(mainMenu(), SIGNAL(openCampaignRequested()), this, SLOT(openNewCampaign()));
@@ -67,7 +72,8 @@ GameWindow::GameWindow(SvgTheme* theme_, QWidget* parent) :
     connect(ui->actionQuit, SIGNAL(triggered()), this, SIGNAL(quitRequested()));
     connect(ui->actionStartMap, SIGNAL(triggered()), this, SLOT(openNewMap()));
     connect(ui->actionStartCampaign, SIGNAL(triggered()), this, SLOT(openNewCampaign()));
-    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveCurrentMap()));
+    connect(ui->actionSaveGame, SIGNAL(triggered()), this, SLOT(saveCurrentMap()));
+    connect(ui->actionSaveEditor, SIGNAL(triggered()), this, SLOT(saveCurrentMap()));
     connect(ui->actionCreateMap, SIGNAL(triggered()), this, SLOT(createNewMap()));
     connect(ui->actionEditMap, SIGNAL(triggered()), this, SLOT(editExistingMap()));
     connect(ui->actionStartTestGame, SIGNAL(triggered()), this, SLOT(startTestGame()));
@@ -180,6 +186,10 @@ void GameWindow::startMap(const QString& mapPath)
         gameView()->reload(modelData());
         enterGameMode();
     }    
+    else {
+        std::cerr << "The map could not be loaded. (Perhaps you have selected nonexisting file or deleted it.)" << std::endl;
+    }
+    mapFile.close();
 }
 
 void GameWindow::stopCampaign()
@@ -263,6 +273,10 @@ void GameWindow::startTestGame()
 {
     if (isInEditorMode()) {
         //qDebug() << "Starting test game";
+        oldPlayerPos_m = modelData()->playerPosition();
+        oldEnemyPos_m = modelData()->enemyPosition();
+        oldPortalPos_m = modelData()->portalPosition();
+
         ui->actionStartTestGame->setVisible(false);
         ui->actionStopTestGame->setVisible(true);
         gameView()->reload(modelData());
@@ -274,9 +288,13 @@ void GameWindow::stopTestGame()
 {
     if (isInEditorMode()) {
         //qDebug() << "Stoping test game";
+        modelData()->setPlayerPosition(oldPlayerPos_m);
+        modelData()->setEnemyPosition(oldEnemyPos_m);
+        modelData()->setPortalPosition(oldPortalPos_m);
+
         ui->actionStartTestGame->setVisible(true);
         ui->actionStopTestGame->setVisible(false);
-        editorView()->reload(modelData());
+        editorView()->reload(modelData());        
         switchToEditorView();
     }
 }
@@ -286,7 +304,8 @@ void GameWindow::enterEditorMode()
     editorMode_m = true;
     ui->actionStartTestGame->setVisible(true);
     ui->actionStopTestGame->setVisible(false);
-    ui->actionSave->setVisible(true);
+    ui->actionSaveGame->setVisible(false);
+    ui->actionSaveEditor->setVisible(true);
     switchToEditorView();
 }
 
@@ -295,7 +314,8 @@ void GameWindow::enterGameMode()
     editorMode_m = false;
     ui->actionStartTestGame->setVisible(false);
     ui->actionStopTestGame->setVisible(false);
-    ui->actionSave->setVisible(true);
+    ui->actionSaveEditor->setVisible(false);
+    ui->actionSaveGame->setVisible(true);
     switchToGameView();
 }
 
@@ -404,7 +424,7 @@ void GameWindow::showHelpDialog()
                          <li> \
                          <h4>The Game</h4> \
                              <ul> \
-                                 <li>Start game by clicking \'<em>Game -> Start Game</em>\' and selecting map file.</li> \
+                                 <li>Start game by clicking \'<em>Game -> Start Skirmish</em>\' and selecting map file.</li> \
                                  <li>Start campaign by clicking \'<em>Game -> Start Campaign</em>\' and selecting folder with map files.</li> \
                                  <li>Controls: \
                                      <ul> \
@@ -412,14 +432,27 @@ void GameWindow::showHelpDialog()
                                          <li>The mouse (by cliking on the nearby tiles)</li> \
                                      </ul> \
                                  </li> \
+                                 <li>To save the game in progress click \'<em>Game -> Save as</em>\'</li> and select name and path you desire. \
                              </ul> \
                          </li> \
                          <li> \
                          <h4>The Editor</h4> \
+                         <ul> \
+                             <li>Edit exiting map by clicking \'<em>Editor -> Edit Map</em>\' and selecting map file.</li> \
+                             <li>Create new map by clicking \'<em>Editor -> Create Map</em>\' and entering the map name and dimensions.</li> \
+                             <li>Controls: \
+                                 <ul> \
+                                      <li>The mouse (by clicking on tiles).</li> \
+                                 </ul> \
+                             </li> \
+                             <li>You can test the map you are editing by clicking \'<em>Editor -> Start Test Game</em>\'.</li> \
+                             <li>You can stop the test by clicking \'<em>Editor -> Stop Test Game</em>\'.</li> \
+                             <li>To save the game in progress click \'<em>Editor -> Save as</em>\'</li> and select name and path you desire. \
+                         </ul> \
+                         </li> \
+                         <h4>Miscellaneous</h4> \
                              <ul> \
-                                 <li>Edit exiting map by clicking \'<em>Editor -> Edit Map</em>\' and selecting map file.</li> \
-                                 <li>Create new map by clicking \'<em>Editor -> Create Map</em>\' and entering the map name and dimensions.</li> \
-                                 <li>You can test the map you are editing by clicking \'<em>Editor -> Test Map</em>\'.</li> \
+                                 <li>To enter fullscreen mode, click \'<em>View -> Fullscreen/em>\'.</li> \
                              </ul> \
                          </li> \
                          </ul>"));
