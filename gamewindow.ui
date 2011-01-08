@@ -35,17 +35,6 @@
     </property>
     <addaction name="actionFullscreen"/>
    </widget>
-   <widget class="QMenu" name="menuGame">
-    <property name="title">
-     <string>Game</string>
-    </property>
-    <addaction name="actionStartMap"/>
-    <addaction name="actionStartCampaign"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave"/>
-    <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-   </widget>
    <widget class="QMenu" name="menuEditor">
     <property name="title">
      <string>Editor</string>
@@ -60,6 +49,17 @@
      <string>Help</string>
     </property>
     <addaction name="actionHelp"/>
+   </widget>
+   <widget class="QMenu" name="menuGame">
+    <property name="title">
+     <string>Game</string>
+    </property>
+    <addaction name="actionStartMap"/>
+    <addaction name="actionStartCampaign"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuEditor"/>
@@ -77,12 +77,12 @@
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>Save As</string>
    </property>
   </action>
   <action name="actionStartMap">
    <property name="text">
-    <string>Start Map</string>
+    <string>Start Skirmish</string>
    </property>
   </action>
   <action name="actionStartCampaign">
